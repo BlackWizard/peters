@@ -1,6 +1,11 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi_async_sqlalchemy import SQLAlchemyMiddleware, db
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
 from sqladmin import Admin, ModelView
 from sqladmin.filters import ForeignKeyFilter
 
@@ -39,6 +44,10 @@ app.add_middleware(
 
 admin = Admin(app, engine)
 
+app.mount("/static", StaticFiles(directory="static", html=True))
+app.mount("/plates", StaticFiles(directory="/nfs/dvr/plates"))
+
+templates = Jinja2Templates(directory='templates')
 
 class SourceAdmin(ModelView, model=Source):
     column_list = [
@@ -119,3 +128,8 @@ class FileAdmin(ModelView, model=File):
 
 
 admin.add_view(FileAdmin)
+
+
+@app.get('/', response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse('index.html', {'request': request})
