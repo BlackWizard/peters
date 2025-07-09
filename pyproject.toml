@@ -2,6 +2,9 @@
 name = "peters"
 version = "0.0.1"
 requires-python = ">=3.10"
+dependencies = [
+    "uv>=0.7.19",
+]
 
 [tool.black]
 line-length = 100 
