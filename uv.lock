@@ -96,6 +96,19 @@ wheels = [
 ]
 
 [[package]]
+name = "fastapi-async-sqlalchemy"
+version = "0.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sqlalchemy" },
+    { name = "starlette" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/99/05/e8797d147815f246995bd70a4a3736fbb3500ce3e706e660baf895091dd9/fastapi-async-sqlalchemy-0.6.1.tar.gz", hash = "sha256:c4e0c9832e5e7ef9d647e7eb134e6d326945dca28323e503a21f3d4ab2dee160", size = 6818, upload-time = "2024-01-17T11:42:59.555Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0d/e3/ec3b6c68209e7dd36b58aba4e7f1b52ad01ba9c4f4c37f16b887518d76fe/fastapi_async_sqlalchemy-0.6.1-py3-none-any.whl", hash = "sha256:0f4edfbc7b0f5fc2e0017cd903a953f4e0b01870f09e86cd0bc79087f3606bc4", size = 6424, upload-time = "2024-01-17T11:42:58.222Z" },
+]
+
+[[package]]
 name = "fastapi-storages"
 version = "0.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -265,6 +278,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "alembic" },
     { name = "fastapi" },
+    { name = "fastapi-async-sqlalchemy" },
     { name = "fastapi-storages" },
     { name = "pydantic-settings" },
     { name = "sqladmin" },
@@ -275,6 +289,7 @@ dependencies = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.16.3" },
     { name = "fastapi", specifier = ">=0.116.0" },
+    { name = "fastapi-async-sqlalchemy", specifier = ">=0.6.1" },
     { name = "fastapi-storages", specifier = ">=0.3.0" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
     { name = "sqladmin", specifier = ">=0.21.0" },

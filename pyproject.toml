@@ -5,6 +5,7 @@ requires-python = ">=3.10"
 dependencies = [
     "alembic>=1.16.3",
     "fastapi>=0.116.0",
+    "fastapi-async-sqlalchemy>=0.6.1",
     "fastapi-storages>=0.3.0",
     "pydantic-settings>=2.10.1",
     "sqladmin>=0.21.0",

@@ -5,9 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi_async_sqlalchemy import SQLAlchemyMiddleware, db
+from fastapi_async_sqlalchemy import SQLAlchemyMiddleware
 from sqladmin import Admin, ModelView
-from sqladmin.filters import ForeignKeyFilter
 from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
 
 from app.config import ModeEnum, settings
