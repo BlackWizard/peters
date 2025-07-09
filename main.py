@@ -17,7 +17,6 @@ from app.models import Author, File, Source, Title, TitlePlate, engine
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # startup
-    print("startup fastapi")
     yield
     # shutdown
 
