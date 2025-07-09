@@ -3,6 +3,11 @@ name = "peters"
 version = "0.0.1"
 requires-python = ">=3.10"
 dependencies = [
+    "alembic>=1.16.3",
+    "fastapi>=0.116.0",
+    "fastapi-storages>=0.3.0",
+    "pydantic-settings>=2.10.1",
+    "sqladmin>=0.21.0",
     "uv>=0.7.19",
 ]
 
