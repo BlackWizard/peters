@@ -15,10 +15,10 @@ from fastapi_storages import FileSystemStorage
 from fastapi_storages.integrations.sqlalchemy import FileType, ImageType
 
 
-from app.config import settings
+from sqlmodel import SQLModel, Field, Relationship
 
-engine = create_async_engine(str(settings.pg_dsn))
-async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
+
+
 storage = FileSystemStorage(path="/nfs/dvr/plates")
 
 
@@ -29,6 +29,28 @@ updated_at = Annotated[
 ]
 str_uniq = Annotated[str, mapped_column(unique=True, nullable=False)]
 str_null_true = Annotated[str, mapped_column(nullable=True)]
+
+
+class DBModel(SQLModel):
+    @declared_attr.directive
+    def __tablename__(cls) -> str:
+        return f"{cls.__name__.lower()}s"
+
+
+class BaseModel(DBModel):
+    id: int = Field(
+        primary_key=True,
+        index=True,
+        nullable=False,
+    )
+    updated_at: datetime | None = Field(
+        default_factory=datetime.utcnow,
+        sa_column_kwargs={"server_default": func.now(), "onupdate": datetime.utcnow}
+    )
+    created_at: datetime | None = Field(
+        default_factory=datetime.utcnow,
+        sa_column_kwargs={"server_default": func.now()},
+    )
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -93,6 +115,25 @@ class TitlePlate(Base):
         )
 
 
+class SourceBase(SQLModel):
+    name: str = Field(index=True)
+    url: str | None = None
+
+
+class Source(BaseModel, SourceBase, table=True):
+    files: list["File"] = Relationship(  # noqa: F821
+        back_populates="source", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+
+    def __str__(self):
+        return (
+            f"{self.__class__.__name__}(id={self.id}, "
+            f"name={self.name!r}, "
+            f"url={self.url!r})"
+        )
+
+
+"""
 class Source(Base):
     name: Mapped[str]
     url: Mapped[str]
@@ -105,6 +146,8 @@ class Source(Base):
             f"name={self.name!r}, "
             f"url={self.url!r})"
         )
+"""
+
 
 class File(Base):
     title_id: Mapped[int] = mapped_column(ForeignKey("titles.id"), nullable=False)

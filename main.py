@@ -11,7 +11,8 @@ from sqladmin.filters import ForeignKeyFilter
 from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
 
 from app.config import ModeEnum, settings
-from app.models import Author, File, Source, Title, TitlePlate, engine
+from app.db import engine
+from app.models import Author, File, Source, Title, TitlePlate
 
 
 @asynccontextmanager
