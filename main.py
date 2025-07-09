@@ -1,10 +1,42 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi_async_sqlalchemy import SQLAlchemyMiddleware, db
 from sqladmin import Admin, ModelView
 from sqladmin.filters import ForeignKeyFilter
 
 from app.models import engine, Source, Author, Title, TitlePlate, File
+from app.config import ModeEnum, settings
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # startup
+    print("startup fastapi")
+    yield
+    # shutdown
+
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    version=settings.API_VERSION,
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    SQLAlchemyMiddleware,
+    db_url=str(settings.ASYNC_DATABASE_URI),
+    engine_args={
+        "echo": False,
+        "poolclass": NullPool
+        if settings.MODE == ModeEnum.testing
+        else AsyncAdaptedQueuePool
+        # "pool_pre_ping": True,
+        # "pool_size": settings.POOL_SIZE,
+        # "max_overflow": 64,
+    },
+)
+
 admin = Admin(app, engine)
 
 
