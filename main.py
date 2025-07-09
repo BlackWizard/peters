@@ -1,17 +1,17 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from fastapi_async_sqlalchemy import SQLAlchemyMiddleware, db
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi_async_sqlalchemy import SQLAlchemyMiddleware, db
 from sqladmin import Admin, ModelView
 from sqladmin.filters import ForeignKeyFilter
-from sqlalchemy.pool import NullPool, AsyncAdaptedQueuePool
+from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
 
-from app.models import engine, Source, Author, Title, TitlePlate, File
 from app.config import ModeEnum, settings
+from app.models import Author, File, Source, Title, TitlePlate, engine
 
 
 @asynccontextmanager
@@ -34,21 +34,33 @@ app.add_middleware(
     db_url=str(settings.ASYNC_DATABASE_URI),
     engine_args={
         "echo": False,
-        "poolclass": NullPool
-        if settings.MODE == ModeEnum.testing
-        else AsyncAdaptedQueuePool
+        "poolclass": (
+            NullPool if settings.MODE == ModeEnum.testing else AsyncAdaptedQueuePool
+        ),
         # "pool_pre_ping": True,
         # "pool_size": settings.POOL_SIZE,
         # "max_overflow": 64,
     },
 )
 
+
+if settings.BACKEND_CORS_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+
 admin = Admin(app, engine)
 
 app.mount("/static", StaticFiles(directory="static", html=True))
 app.mount("/plates", StaticFiles(directory="/nfs/dvr/plates"))
 
-templates = Jinja2Templates(directory='templates')
+templates = Jinja2Templates(directory="templates")
+
 
 class SourceAdmin(ModelView, model=Source):
     column_list = [
@@ -91,8 +103,8 @@ class TitleAdmin(ModelView, model=Title):
             "fields": ("id",),
             "order_by": "id",
         },
-
     }
+
 
 #    column_filters = [
 #        ForeignKeyFilter(Author.id, Author.short, title="Author")
@@ -103,7 +115,12 @@ admin.add_view(TitleAdmin)
 
 
 class TitlePlateAdmin(ModelView, model=TitlePlate):
-    column_list = [TitlePlate.id, TitlePlate.plate, TitlePlate.position, TitlePlate.title]
+    column_list = [
+        TitlePlate.id,
+        TitlePlate.plate,
+        TitlePlate.position,
+        TitlePlate.title,
+    ]
     form_excluded_columns = [TitlePlate.created_at, TitlePlate.updated_at]
 
     form_ajax_refs = {
@@ -112,6 +129,7 @@ class TitlePlateAdmin(ModelView, model=TitlePlate):
             "order_by": "id",
         },
     }
+
 
 admin.add_view(TitlePlateAdmin)
 
@@ -131,6 +149,6 @@ class FileAdmin(ModelView, model=File):
 admin.add_view(FileAdmin)
 
 
-@app.get('/', response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse('index.html', {'request': request})
+    return templates.TemplateResponse("index.html", {"request": request})
