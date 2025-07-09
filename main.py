@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from sqladmin import Admin, ModelView
 from sqladmin.filters import ForeignKeyFilter
+from sqlalchemy.pool import NullPool, AsyncAdaptedQueuePool
 
 from app.models import engine, Source, Author, Title, TitlePlate, File
 from app.config import ModeEnum, settings
