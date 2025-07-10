@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi_async_sqlalchemy import SQLAlchemyMiddleware, db
+from sqlmodel import select
 from sqladmin import Admin, ModelView
 from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
 
@@ -150,7 +151,6 @@ admin.add_view(FileAdmin)
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    with db:
-        result = await db.session.execute(Title.select())
-        titles = result.scalars().all()
+    result = await db.session.execute(select(Title))
+    titles = result.scalars().all()
     return templates.TemplateResponse("index.html", {"request": request, "titles": titles})

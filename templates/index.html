@@ -65,6 +65,7 @@
     <div class="py-5 bg-body-tertiary">
 	    <div class="container">
 		    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+			    {% for title in titles %}
 			    <div class="col">
 				    <div class="card shadow-sm">
 					    <img src="/plates/Liszt_-_Werke_-_Band_X_-_9987.png" class="bd-placeholder-img card-img-top">
@@ -76,22 +77,23 @@
 					    </svg>
 					    -->
 					    <div class="card-body">
-						    <strong class="d-inline-block mb-2 text-success-emphasis">Werke Band X</strong>
-						    <h3 class="mb-0">Frantz Liszt</h3>
-						    <div class="mb-1 text-body-secondary">1917</div>
-						    <p class="card-text">122</p>
+						    <strong class="d-inline-block mb-2 text-success-emphasis">{{ title.name }}</strong>
+						    <h4 class="mb-0">{{ title.author.name }}</h4>
+						    <div class="mb-1 text-body-secondary">{{ title.year }}</div>
+						    <p class="card-text">{{ title.pages }}</p>
 						    <div class="d-flex justify-content-between align-items-center">
 							    <div class="btn-group">
 								    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
 								    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
 							    </div>
-							    <small class="text-body-secondary">8222</small>
-							    <small class="text-body-secondary">8223</small>
-							    <small class="text-body-secondary">8224</small>
+							    {% for plate in title.plates %}
+							    <small class="text-body-secondary">{{ plate.plate }}</small>
+							    {% endfor %}
 						    </div>
 					    </div>
 				    </div>
 			    </div>
+			    {% endfor %}
 		    </div>
 	    </div>
     </div>
