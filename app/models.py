@@ -23,6 +23,7 @@ from fastapi import Form, UploadFile
 from fastapi import File as FormFile
 # from fastapi_storages import FileSystemStorage
 # from fastapi_storages.integrations.sqlalchemy import FileType, ImageType
+from sqlalchemy_file import File, FileField, ImageField
 
 
 from sqlmodel import SQLModel, Field, Relationship
@@ -127,6 +128,9 @@ class Title(DBModelBase, TitleBase, table=True):
         )
     )
 
+    class Config:
+        arbitrary_types_allowed = True
+
     def __str__(self):
         return (
             f"{self.__class__.__name__}(id={self.id}, "
@@ -204,11 +208,13 @@ class File(DBModelBase, FileBase, table=True):
             )
         )
     )
+    class Config:
+        arbitrary_types_allowed = True
 
     def __str__(self):
         return (
             f"{self.__class__.__name__}(id={self.id}, "
-            f"file={self.file.filename!r})"
+            f"file={self.file!r})"
         )
 
 
